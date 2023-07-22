@@ -1,0 +1,193 @@
+{
+ "Resources": {
+  "CarRideStream1495F8A6": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "Name": "acr-carrides",
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "acr-kds/CarRideStream/Resource"
+   }
+  },
+  "CarRideProducerLambdaServiceRole3BB89D8B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "acr-kds/CarRideProducerLambda/ServiceRole/Resource"
+   }
+  },
+  "CarRideProducerLambdaServiceRoleDefaultPolicyF947CCB7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kinesis:ListShards",
+        "kinesis:PutRecord",
+        "kinesis:PutRecords"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CarRideStream1495F8A6",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CarRideProducerLambdaServiceRoleDefaultPolicyF947CCB7",
+    "Roles": [
+     {
+      "Ref": "CarRideProducerLambdaServiceRole3BB89D8B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "acr-kds/CarRideProducerLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "CarRideProducerLambdaC9ECD459": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-403993201276-us-west-2",
+     "S3Key": "c17a5fe8e8f4adfd4891dc8f629abe63e93b6bdd1f7d745d7d40f77239d2d056.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "CarRideProducerLambdaServiceRole3BB89D8B",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "STREAM_NAME": {
+       "Ref": "CarRideStream1495F8A6"
+      }
+     }
+    },
+    "Handler": "KinesisProducer.lambda_handler",
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "CarRideProducerLambdaServiceRoleDefaultPolicyF947CCB7",
+    "CarRideProducerLambdaServiceRole3BB89D8B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "acr-kds/CarRideProducerLambda/Resource",
+    "aws:asset:path": "asset.c17a5fe8e8f4adfd4891dc8f629abe63e93b6bdd1f7d745d7d40f77239d2d056",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zVOSw6CMBA9i/syiix0KySuCR6AlDLiCG0Tpo0hTe8uBV29b17eGa4XOB3khzPVj9lEHYSHk2oUq9WGkQwycfJmlFpUT7OzKCapu15CuHujHFmTsj+PgqSG0NgJk71hbSdSS5I7i4KLVjKjY7glWDWUXo3oSskYU7OypqdtvEG2flYotur6cCAzbNu/IIp6cS9rjgXkORSHNxNlszeONEKz4xfnapvY7QAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "acr-kds/CDKMetadata/Default"
+   }
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

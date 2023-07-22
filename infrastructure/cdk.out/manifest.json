@@ -1,0 +1,327 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "acr-vpc.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "acr-vpc.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "acr-vpc": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://403993201276/us-west-2",
+      "properties": {
+        "templateFile": "acr-vpc.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-deploy-role-403993201276-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-cfn-exec-role-403993201276-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-403993201276-us-west-2/fe1dc406de17f5022fb8da15effeea78ca58d3515c2fa1dda5b426191688c058.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "acr-vpc.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-lookup-role-403993201276-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "acr-vpc.assets"
+      ],
+      "metadata": {
+        "/acr-vpc/acr-vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcD359A968"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet1SubnetB488EADB"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet1RouteTable44DCAE35"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet1RouteTableAssociationE3E5D768"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet1DefaultRoute5EC3EC27"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet1EIP94339D9C"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet1NATGatewayF44F2F8D"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet2Subnet813139B7"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet2RouteTable7B6A0E73"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet2RouteTableAssociationB09F5500"
+          }
+        ],
+        "/acr-vpc/acr-vpc/publicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcpublicSubnet2DefaultRoute8EE853EC"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet1SubnetAF911B6B"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet1RouteTable6012C7A8"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet1RouteTableAssociation150C935B"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet1DefaultRoute1F7DDB6C"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet2SubnetF637E386"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet2RouteTableA6A13AB8"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet2RouteTableAssociation43A07D7B"
+          }
+        ],
+        "/acr-vpc/acr-vpc/privateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcprivateSubnet2DefaultRoute75D079C0"
+          }
+        ],
+        "/acr-vpc/acr-vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcIGWEA8F5FD0"
+          }
+        ],
+        "/acr-vpc/acr-vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcVPCGWD85E47BF"
+          }
+        ],
+        "/acr-vpc/acr-vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acrvpcRestrictDefaultSecurityGroupCustomResourceCEF41D66"
+          }
+        ],
+        "/acr-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/acr-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/acr-vpc/bastion-sg/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "bastionsg9F6FB053"
+          }
+        ],
+        "/acr-vpc/BastionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BastionRole201D3308"
+          }
+        ],
+        "/acr-vpc/BastionHost/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BastionHostInstanceProfile89CC0AF9"
+          }
+        ],
+        "/acr-vpc/BastionHost/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BastionHost04D516A6"
+          }
+        ],
+        "/acr-vpc/bastion-public-dns-name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "bastionpublicdnsname"
+          }
+        ],
+        "/acr-vpc/bastion-private-ip": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "bastionprivateip"
+          }
+        ],
+        "/acr-vpc/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/acr-vpc/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/acr-vpc/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "acr-vpc"
+    },
+    "acr-kds.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "acr-kds.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "acr-kds": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://403993201276/us-west-2",
+      "properties": {
+        "templateFile": "acr-kds.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-deploy-role-403993201276-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-cfn-exec-role-403993201276-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-403993201276-us-west-2/a871c5b6dcc0b361eaee18739f9ebec54b580cb1651be0caef20e0bba925cd87.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "acr-kds.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-lookup-role-403993201276-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "acr-kds.assets"
+      ],
+      "metadata": {
+        "/acr-kds/CarRideStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideStream1495F8A6"
+          }
+        ],
+        "/acr-kds/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/acr-kds/CarRideProducerLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideProducerLambdaServiceRole3BB89D8B"
+          }
+        ],
+        "/acr-kds/CarRideProducerLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideProducerLambdaServiceRoleDefaultPolicyF947CCB7"
+          }
+        ],
+        "/acr-kds/CarRideProducerLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideProducerLambdaC9ECD459"
+          }
+        ],
+        "/acr-kds/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/acr-kds/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/acr-kds/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "acr-kds"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

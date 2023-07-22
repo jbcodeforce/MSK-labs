@@ -1,0 +1,6 @@
+# do not specify a vpc_name it it does not exist from another stack
+#vpc_name: "AcrVPC"
+cidr_mask: 24
+key_name: "my-ec2-key-pair"
+bastion_name: "MyAcrBastion"
+
