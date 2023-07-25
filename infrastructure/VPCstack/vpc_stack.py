@@ -69,22 +69,40 @@ class VPCstack(BaseStack):
         role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("EC2InstanceProfileForImageBuilderECRContainerBuilds"))
  
         myAmiImage = ec2.LookupMachineImage(name="MyAcrBastion")
-        bastion = ec2.Instance(
-            self,
-            "BastionHost",
-            instance_name=self.config.get("bastion_name"),
-            key_name=self.config.get("key_name"),
-            instance_type=ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-            machine_image=myAmiImage,
-            security_group=sg,
-            role=role,
-            vpc=self.vpc,
-            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
-        )
+        if myAmiImage:
+            bastion = ec2.Instance(
+                self,
+                "BastionHost",
+                instance_name=self.config.get("bastion_name"),
+                key_name=self.config.get("key_name"),
+                instance_type=ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+                machine_image=myAmiImage,
+                security_group=sg,
+                role=role,
+                vpc=self.vpc,
+                vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
+            )
+        else:
+            bastion = ec2.Instance(
+                self,
+                "BastionHost",
+                instance_name=self.config.get("bastion_name"),
+                key_name=self.config.get("key_name"),
+                instance_type=ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+                machine_image=amzn_linux,
+                security_group=sg,
+                role=role,
+                vpc=self.vpc,
+                vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
+            )
 
-        bastion.connections.allow_from(ec2.Peer.ipv4(f"{my_ip}/32"), ec2.Port.all_traffic())
+        data = open("./user_data.sh", "rb").read()
+        userData=ec2.UserData.for_linux()
+        userData.add_commands(str(data,'utf-8'))
+        bastion.connections.allow_from(ec2.Peer.ipv4(f"{my_ip}/32"), ec2.Port.tcp(22))
 
         CfnOutput(self, "bastion-public-dns-name", value=bastion.instance_public_dns_name)
+        CfnOutput(self, "bastion-public-ip", value=bastion.instance_public_ip)
         CfnOutput(self, "bastion-private-ip", value=bastion.instance_private_ip)
 
         return sg

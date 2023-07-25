@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-deploy-role-403993201276-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-cfn-exec-role-403993201276-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-403993201276-us-west-2/fe1dc406de17f5022fb8da15effeea78ca58d3515c2fa1dda5b426191688c058.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-403993201276-us-west-2/28fb89a4b9287f987723e02656bc285431953f7cb6f38e61f681c1d6f2f04bba.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -219,6 +219,24 @@
             "data": "CDKMetadata"
           }
         ],
+        "/acr-vpc/Exports/Output{\"Ref\":\"acrvpcD359A968\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefacrvpcD359A9687E44DC2F"
+          }
+        ],
+        "/acr-vpc/Exports/Output{\"Ref\":\"acrvpcprivateSubnet1SubnetAF911B6B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefacrvpcprivateSubnet1SubnetAF911B6B2BD791FC"
+          }
+        ],
+        "/acr-vpc/Exports/Output{\"Ref\":\"acrvpcprivateSubnet2SubnetF637E386\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefacrvpcprivateSubnet2SubnetF637E386125321C4"
+          }
+        ],
         "/acr-vpc/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -250,7 +268,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-deploy-role-403993201276-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-cfn-exec-role-403993201276-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-403993201276-us-west-2/a871c5b6dcc0b361eaee18739f9ebec54b580cb1651be0caef20e0bba925cd87.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-403993201276-us-west-2/eabdf5544f811cfd409649979572b177a9a11f4011d4b331e6a135e5a5d91880.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -316,6 +334,144 @@
         ]
       },
       "displayName": "acr-kds"
+    },
+    "acr-msk.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "acr-msk.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "acr-msk": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://403993201276/us-west-2",
+      "properties": {
+        "templateFile": "acr-msk.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-deploy-role-403993201276-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-cfn-exec-role-403993201276-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-403993201276-us-west-2/883b7845410a7b78a837c9afb24dc128ed8561456cef9a5bc0a7d72f24787251.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "acr-msk.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::403993201276:role/cdk-hnb659fds-lookup-role-403993201276-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "acr-vpc",
+        "acr-msk.assets"
+      ],
+      "metadata": {
+        "/acr-msk/AcrMSKSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AcrMSKSecurityGroup34AC9342"
+          }
+        ],
+        "/acr-msk/AcrCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AcrClusterE764B3C7"
+          }
+        ],
+        "/acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AcrClusterBootstrapBrokersBootstrapBrokerStringSaslScram8757D97E"
+          }
+        ],
+        "/acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AcrClusterBootstrapBrokersBootstrapBrokerStringSaslScramCustomResourcePolicy97A4F405"
+          }
+        ],
+        "/acr-msk/AcrMSKrole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AcrMSKrole9B71F1BD"
+          }
+        ],
+        "/acr-msk/AcrClusterPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AcrClusterPolicy93994131"
+          }
+        ],
+        "/acr-msk/CarRideMSKConsumerLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideMSKConsumerLambdaServiceRoleF2015A8E"
+          }
+        ],
+        "/acr-msk/CarRideMSKConsumerLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideMSKConsumerLambdaServiceRoleDefaultPolicy022F2962"
+          }
+        ],
+        "/acr-msk/CarRideMSKConsumerLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideMSKConsumerLambda2DF74D66"
+          }
+        ],
+        "/acr-msk/CarRideMSKConsumerLambda/KafkaEventSource:acrmskCarRideMSKConsumerLambda0672610Fcarrides/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CarRideMSKConsumerLambdaKafkaEventSourceacrmskCarRideMSKConsumerLambda0672610Fcarrides0ED6F0EE"
+          }
+        ],
+        "/acr-msk/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/acr-msk/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/acr-msk/Kafka Bootstrap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KafkaBootstrap"
+          }
+        ],
+        "/acr-msk/Kafka Cluster ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KafkaClusterARN"
+          }
+        ],
+        "/acr-msk/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/acr-msk/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/acr-msk/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "acr-msk"
     },
     "Tree": {
       "type": "cdk:tree",

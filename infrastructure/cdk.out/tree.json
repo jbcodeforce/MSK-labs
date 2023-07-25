@@ -647,9 +647,11 @@
                     ],
                     "securityGroupIngress": [
                       {
-                        "cidrIp": "73.189.34.75/32",
-                        "ipProtocol": "-1",
-                        "description": "from 73.189.34.75/32:ALL TRAFFIC"
+                        "cidrIp": "15.248.1.151/32",
+                        "ipProtocol": "tcp",
+                        "fromPort": 22,
+                        "toPort": 22,
+                        "description": "from 15.248.1.151/32:22"
                       }
                     ],
                     "vpcId": {
@@ -831,6 +833,40 @@
                 "path": "acr-vpc/CDKMetadata/Default",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "acr-vpc/Exports",
+            "children": {
+              "Output{\"Ref\":\"acrvpcD359A968\"}": {
+                "id": "Output{\"Ref\":\"acrvpcD359A968\"}",
+                "path": "acr-vpc/Exports/Output{\"Ref\":\"acrvpcD359A968\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.87.0"
+                }
+              },
+              "Output{\"Ref\":\"acrvpcprivateSubnet1SubnetAF911B6B\"}": {
+                "id": "Output{\"Ref\":\"acrvpcprivateSubnet1SubnetAF911B6B\"}",
+                "path": "acr-vpc/Exports/Output{\"Ref\":\"acrvpcprivateSubnet1SubnetAF911B6B\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.87.0"
+                }
+              },
+              "Output{\"Ref\":\"acrvpcprivateSubnet2SubnetF637E386\"}": {
+                "id": "Output{\"Ref\":\"acrvpcprivateSubnet2SubnetF637E386\"}",
+                "path": "acr-vpc/Exports/Output{\"Ref\":\"acrvpcprivateSubnet2SubnetF637E386\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.87.0"
                 }
               }
@@ -1055,7 +1091,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-403993201276-us-west-2",
-                      "s3Key": "c17a5fe8e8f4adfd4891dc8f629abe63e93b6bdd1f7d745d7d40f77239d2d056.zip"
+                      "s3Key": "b8ce0554579bd772973006e235d72bdb136de0ab39599d373ecbfce34357007a.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1114,6 +1150,699 @@
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "acr-kds/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.87.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.87.0"
+        }
+      },
+      "acr-msk": {
+        "id": "acr-msk",
+        "path": "acr-msk",
+        "children": {
+          "AcrMSKSecurityGroup": {
+            "id": "AcrMSKSecurityGroup",
+            "path": "acr-msk/AcrMSKSecurityGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "acr-msk/AcrMSKSecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "acr-msk/AcrMSKSecurityGroup",
+                    "groupName": "AcrMSKSecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "vpcId": {
+                      "Fn::ImportValue": "acr-vpc:ExportsOutputRefacrvpcD359A9687E44DC2F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "2.87.0"
+            }
+          },
+          "AcrCluster": {
+            "id": "AcrCluster",
+            "path": "acr-msk/AcrCluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "acr-msk/AcrCluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.kafka.t3.small",
+                      "clientSubnets": [
+                        {
+                          "Fn::ImportValue": "acr-vpc:ExportsOutputRefacrvpcprivateSubnet1SubnetAF911B6B2BD791FC"
+                        },
+                        {
+                          "Fn::ImportValue": "acr-vpc:ExportsOutputRefacrvpcprivateSubnet2SubnetF637E386125321C4"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "AcrMSKSecurityGroup34AC9342",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 10
+                        }
+                      }
+                    },
+                    "clusterName": "AcrCluster",
+                    "kafkaVersion": "3.4.0",
+                    "numberOfBrokerNodes": 2,
+                    "clientAuthentication": {
+                      "sasl": {
+                        "iam": {
+                          "enabled": true
+                        }
+                      }
+                    },
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "2.87.0"
+                }
+              },
+              "BootstrapBrokersBootstrapBrokerStringSaslScram": {
+                "id": "BootstrapBrokersBootstrapBrokerStringSaslScram",
+                "path": "acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram",
+                "children": {
+                  "Provider": {
+                    "id": "Provider",
+                    "path": "acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram/Provider",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                      "version": "2.87.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "2.87.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "2.87.0"
+                    }
+                  },
+                  "CustomResourcePolicy": {
+                    "id": "CustomResourcePolicy",
+                    "path": "acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram/CustomResourcePolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "acr-msk/AcrCluster/BootstrapBrokersBootstrapBrokerStringSaslScram/CustomResourcePolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "kafka:GetBootstrapBrokers",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "AcrClusterE764B3C7"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AcrClusterBootstrapBrokersBootstrapBrokerStringSaslScramCustomResourcePolicy97A4F405",
+                            "roles": [
+                              {
+                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.87.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.87.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
+              "version": "2.87.0-alpha.0"
+            }
+          },
+          "AcrMSKrole": {
+            "id": "AcrMSKrole",
+            "path": "acr-msk/AcrMSKrole",
+            "children": {
+              "ImportAcrMSKrole": {
+                "id": "ImportAcrMSKrole",
+                "path": "acr-msk/AcrMSKrole/ImportAcrMSKrole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.87.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "acr-msk/AcrMSKrole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ec2.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Role external client can assume to do action on MSK",
+                    "roleName": "msk-role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.87.0"
+            }
+          },
+          "AcrClusterPolicy": {
+            "id": "AcrClusterPolicy",
+            "path": "acr-msk/AcrClusterPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "acr-msk/AcrClusterPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "kafka-cluster:Connect",
+                            "kafka-cluster:DescribeCluster",
+                            "kafka:Get*"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": {
+                            "Ref": "AcrClusterE764B3C7"
+                          }
+                        },
+                        {
+                          "Action": [
+                            "kafka-cluster:AlterGroup",
+                            "kafka-cluster:CreateTopic",
+                            "kafka-cluster:DescribeGroup",
+                            "kafka-cluster:DescribeTopic",
+                            "kafka-cluster:ReadData",
+                            "kafka-cluster:WriteData"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "AcrClusterE764B3C7"
+                                },
+                                "/*"
+                              ]
+                            ]
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "AcrClusterPolicy93994131",
+                    "roles": [
+                      {
+                        "Ref": "AcrMSKrole9B71F1BD"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Policy",
+              "version": "2.87.0"
+            }
+          },
+          "CarRideMSKConsumerLambda": {
+            "id": "CarRideMSKConsumerLambda",
+            "path": "acr-msk/CarRideMSKConsumerLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "acr-msk/CarRideMSKConsumerLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "acr-msk/CarRideMSKConsumerLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.87.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "acr-msk/CarRideMSKConsumerLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaMSKExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.87.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "acr-msk/CarRideMSKConsumerLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "acr-msk/CarRideMSKConsumerLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "kafka:DescribeCluster",
+                                    "kafka:GetBootstrapBrokers",
+                                    "kafka:ListScramSecrets"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "AcrClusterE764B3C7"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "CarRideMSKConsumerLambdaServiceRoleDefaultPolicy022F2962",
+                            "roles": [
+                              {
+                                "Ref": "CarRideMSKConsumerLambdaServiceRoleF2015A8E"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.87.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.87.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.87.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "acr-msk/CarRideMSKConsumerLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "acr-msk/CarRideMSKConsumerLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.87.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "acr-msk/CarRideMSKConsumerLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.87.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.87.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "acr-msk/CarRideMSKConsumerLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-403993201276-us-west-2",
+                      "s3Key": "f8399e1eaa916cfbbb914506de9c582b32e466df94439f7d3b4ac1bd5df29b31.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CarRideMSKConsumerLambdaServiceRoleF2015A8E",
+                        "Arn"
+                      ]
+                    },
+                    "environment": {
+                      "variables": {
+                        "TOPIC_NAME": "carrides"
+                      }
+                    },
+                    "handler": "MSKConsumer.lambda_handler",
+                    "runtime": "python3.9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.87.0"
+                }
+              },
+              "KafkaEventSource:acrmskCarRideMSKConsumerLambda0672610Fcarrides": {
+                "id": "KafkaEventSource:acrmskCarRideMSKConsumerLambda0672610Fcarrides",
+                "path": "acr-msk/CarRideMSKConsumerLambda/KafkaEventSource:acrmskCarRideMSKConsumerLambda0672610Fcarrides",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "acr-msk/CarRideMSKConsumerLambda/KafkaEventSource:acrmskCarRideMSKConsumerLambda0672610Fcarrides/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "CarRideMSKConsumerLambda2DF74D66"
+                        },
+                        "batchSize": 100,
+                        "eventSourceArn": {
+                          "Ref": "AcrClusterE764B3C7"
+                        },
+                        "startingPosition": "TRIM_HORIZON",
+                        "topics": [
+                          "carrides"
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "version": "2.87.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.87.0"
+            }
+          },
+          "AWS679f53fac002430cb0da5b7982bd2287": {
+            "id": "AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.87.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.87.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.87.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.87.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.87.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.87.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "acr-msk/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-403993201276-us-west-2",
+                      "s3Key": "d62cd506a0f4ef6a29d7a97e2a02d80bc8248142ce428543cfbf0d84b3c116a2.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs18.x",
+                    "timeout": 120
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.87.0"
+            }
+          },
+          "Kafka Bootstrap": {
+            "id": "Kafka Bootstrap",
+            "path": "acr-msk/Kafka Bootstrap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.87.0"
+            }
+          },
+          "Kafka Cluster ARN": {
+            "id": "Kafka Cluster ARN",
+            "path": "acr-msk/Kafka Cluster ARN",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.87.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "acr-msk/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "acr-msk/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "acr-msk/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.87.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "acr-msk/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "2.87.0"

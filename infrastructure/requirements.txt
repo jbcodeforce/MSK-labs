@@ -3,3 +3,4 @@ constructs>=10.0.0,<11.0.0
 boto3
 pyyaml
 requests
+aws-cdk.aws-msk-alpha>=2.87.0a0

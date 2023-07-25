@@ -514,9 +514,11 @@
     ],
     "SecurityGroupIngress": [
      {
-      "CidrIp": "73.189.34.75/32",
-      "Description": "from 73.189.34.75/32:ALL TRAFFIC",
-      "IpProtocol": "-1"
+      "CidrIp": "15.248.1.151/32",
+      "Description": "from 15.248.1.151/32:22",
+      "FromPort": 22,
+      "IpProtocol": "tcp",
+      "ToPort": 22
      }
     ],
     "VpcId": {
@@ -650,6 +652,30 @@
      "BastionHost04D516A6",
      "PrivateIp"
     ]
+   }
+  },
+  "ExportsOutputRefacrvpcD359A9687E44DC2F": {
+   "Value": {
+    "Ref": "acrvpcD359A968"
+   },
+   "Export": {
+    "Name": "acr-vpc:ExportsOutputRefacrvpcD359A9687E44DC2F"
+   }
+  },
+  "ExportsOutputRefacrvpcprivateSubnet1SubnetAF911B6B2BD791FC": {
+   "Value": {
+    "Ref": "acrvpcprivateSubnet1SubnetAF911B6B"
+   },
+   "Export": {
+    "Name": "acr-vpc:ExportsOutputRefacrvpcprivateSubnet1SubnetAF911B6B2BD791FC"
+   }
+  },
+  "ExportsOutputRefacrvpcprivateSubnet2SubnetF637E386125321C4": {
+   "Value": {
+    "Ref": "acrvpcprivateSubnet2SubnetF637E386"
+   },
+   "Export": {
+    "Name": "acr-vpc:ExportsOutputRefacrvpcprivateSubnet2SubnetF637E386125321C4"
    }
   }
  },
