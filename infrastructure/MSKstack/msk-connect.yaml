@@ -3,5 +3,33 @@ Parameters:
   VpcId:
     Type: String
 Resources:
-  
+  KDSsrcConnect:
+    Type: AWS::KafkaConnect::Connector
+    Properties: 
+      Capacity: 
+        AutoScaling:
+          MaxWorkerCount: 2
+          McuCount: Integer
+          MinWorkerCount: 1
+          ScaleInPolicy: 
+            ScaleInPolicy
+          ScaleOutPolicy: 
+            ScaleOutPolicy
+        ProvisionedCapacity:
+      ConnectorConfiguration: 
+        Key: Value
+      ConnectorDescription: String
+      ConnectorName: String
+      KafkaCluster: 
+        KafkaCluster
+      KafkaClusterClientAuthentication: 
+        KafkaClusterClientAuthentication
+      KafkaClusterEncryptionInTransit: 
+        KafkaClusterEncryptionInTransit
+      KafkaConnectVersion: String
+      LogDelivery: 
+        LogDelivery
+      Plugins: 
+        - Plugin
+      ServiceExecutionRoleArn: 
   

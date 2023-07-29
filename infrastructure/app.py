@@ -7,7 +7,6 @@ import aws_cdk as cdk
 from helpers.helpers import getAppEnv
 
 from VPCstack.vpc_stack import VPCstack
-from KDSstack.kds_stack import KDSstack
 from MSKstack.msk_stack import MSKstack
 
 import yaml
@@ -24,7 +23,6 @@ def init_app() -> cdk.App:
     config = load_configuration(app_env)
     ## Add nested stacks below
     vpc_stack = VPCstack(app, f"{app_env}-vpc",env=env,config=config)
-    kds_stack = KDSstack(app, f"{app_env}-kds",env=env,config=config)
     msk_stack = MSKstack(app, f"{app_env}-msk",vpc=vpc_stack.vpc,env=env,config=config)
     return app
 

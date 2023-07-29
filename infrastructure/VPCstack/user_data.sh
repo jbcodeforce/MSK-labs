@@ -9,6 +9,7 @@ sudo yum install docker
 sudo usermod -a -G docker ec2-user
 newgrp docker
 sudo systemctl start docker.service
+
 wget https://archive.apache.org/dist/kafka/3.4.1/kafka_2.12-3.4.1.tgz
 tar -xzf kafka_2.12-3.4.1.tgz 
 cd kafka_2.12-3.4.1/libs
