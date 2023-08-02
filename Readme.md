@@ -2,82 +2,96 @@
 
 The goal of this repository is to share some code and practices around MSK.
 
-## Infrastructure
-
-This `infrastucture` folder includes cdk stacks to define the different elements of the labs:
-
-* A Stack for the VPC and a Bastion host to includes Kafka, Java and other important tools.
-
-## Lab 1
-
 The goal of this first proof of technology is to get messages from Amazon Kinesis Data Stream to Amazon Managed Service for Kafka using Kafka Connector Apache Camel source connector.
 
 ![](./docs/architecture.drawio.png)
 
-Part of this solution is defined with Python CDK, and other part with Cloud Formation as MSK CDK is still in Alpha release.
 
-* The VPC to isolate the elements and to define one EC2 Bastion machine, matching the following diagram:
+## Infrastructure
+
+Part of this solution is defined with Python CDK, and other part with Cloud Formation as MSK CDK is still in Alpha release and MSK connect is not supported in CDK yet (July 2023).
+
+This `infrastucture` folder includes cdk stack and constructs to define the different elements of the labs:
+
+* A VPC construct to define 2 private and 2 public subnets, with route tables, routes, NAT Gateway and Internet Gateway.
+* A contruct for a EC2 Bastion host, with Kafka, Java and other important AWS cli tools
+* A construct to define MSK cluster
+* A Stack to include the solution components to stitch everything together.
+
+* The VPC matches the following diagram:
 
 ![](./docs/hands-on-vpc.drawio.svg)
 
     * One internet gateway
     * Route tables are defined in each private subnet to outbound to NAT gateway
     * ACL to authorize inbound traffic
-    * One NAT Gateway per public subnet with one ENI each
-    * The bastion host uses a scripts to install Java, maven, docker, kafka, a library to authenticate to MSK, with specific aws Kafka client connection configuration. 
-    * The bastion host has a security group to authorize ssh on port 22 from a unique computer (the one running the cdk). It also use an Elastic Network Interface.
-    * IAM role is used by the EC2 to access S3, and ECR repository (it may be used to build image and push to ECR)
-
-Jumpstart the infrastructure with cdk on the VPC stack:
-
-```sh
-export APP_NAME=acr
-cdk deploy acr-vpc
-```
-
-* The MSKstack includes a function to define a data streams and a simple Lambda function to post message to the streams.
+    * One NAT Gateway per public subnet with one ENI each.
+    
+* The bastion host uses a scripts to install Java, maven, docker, kafka, a library to authenticate to MSK, with specific aws Kafka client connection configuration. 
+* The bastion host has a security group to authorize ssh on port 22 from a unique computer (the one running the cdk). It also use an Elastic Network Interface.
+* IAM role to be assumed by MSK clients. The policy specifies action on Kafka cluster, topic and groups.
+* The SolutionStack includes a function to define a Kinesis data streams and a simple Lambda function to post message to the KDS streams.
 
 
-### Complete the MSK deployment
+### Deployment
 
-* Create a cluster configuration from the properties file: `MSKstack/kafka-config.properties` with the following script:
+1. Create a Kafka cluster configuration from the properties file: `MSKconstruct/kafka-config.properties` with the following script:
 
 ```sh
-#In  MSKstack
+# In  MSKconstruct folder
 ./addConfiguration.sh
 ```
 
-* Launch the MSK cluster creation using CDK:
+1. Use CDK to deploy the solution stack and all needed constructs:
 
 ```sh
-cdk deploy acr-msk
+export APP_NAME=acr
+cdk deploy
 # it will take some minutes to create
+
+```
+
+1. Verify cluster state
+
+```sh
 aws kafka list-clusters
 ```
 
-* The stack creates:
 
-    * Kinesis Data Streams - stream
-    * Lambda function to produce to KDS
-    * A IAM service role for lambda to create log groups and log streams
-    * MSK cluster, with a security group accepting traffic from anywhere (TO REVISIT)
-    * Lambda function as MSK consumer 
-
-To do:
-
-* Define one security group to be used by producer, consumer and admin bastion host with port number matching bootstrap. 
+## Code explanation
 
 ### Kinesis Data Streams Producer App
 
-The producer is a simple Lambda python function that is using boto3 Kinesis client to put record in a streams. The streams is defined in the CDK KDSstack, and passes the stream name as environment variable for the Lambda. See Lambda code in [src/kinesis-producer/KinesisProducer.py](https://github.com/jbcodeforce/MSK-labs/blob/main/src/kinesis-producer/KinesisProducer.py) and [CDK KDSstack](https://github.com/jbcodeforce/MSK-labs/blob/main/infrastructure/KDSstack/kds_stack.py).
+The producer is a simple Lambda python function that is using boto3 Kinesis client to put record in a streams. The streams is defined in the CDK KDSstack, and passes the stream name as environment variable for the Lambda. See Lambda code in [src/kinesis-producer/KinesisProducer.py](https://github.com/jbcodeforce/MSK-labs/blob/main/src/kinesis-producer/KinesisProducer.py) and [CDK Solution stack](https://github.com/jbcodeforce/MSK-labs/blob/main/infrastructure/SolutionStack/main_stack.py).
+
+```python
+def defineKDSresources(stack, config):
+
+    stream = kinesis.Stream(stack, 
+        config.get("kds_name"),
+        stream_name=config.get("kds_stream_name")
+    )
+
+    # producer lambda
+    kds_producer_lambda = _lambda.Function(stack, config.get("producer_lambda_name"),
+                                        runtime=_lambda.Runtime.PYTHON_3_10,
+                                        code=_lambda.Code.from_asset("../src/kinesis-producer"),
+                                        handler="KinesisProducer.lambda_handler",
+                                        environment={
+                                            "STREAM_NAME": stream.stream_name
+                                        }
+                                        )    
+    stream.grant_write(kds_producer_lambda)
+    return (stream,kds_producer_lambda)
+```
 
 ### MSK and a Lambda topic consumer
 
-A first basic implementation is to use a Lambda consumer and add MSK as an event source. The [CDK MSKstack](https://github.com/jbcodeforce/MSK-labs/blob/main/infrastructure/MSKstack/msk_stack.py) declares MSK cluster, and the lambda function.
+A first basic implementation is to use a Lambda consumer and add MSK as an event source. The [cdk msk-clients](https://github.com/jbcodeforce/MSK-labs/blob/main/infrastructure/MSKstack/msk_stack.py) declares MSK cluster, and the lambda function.
 
-We need to declara an IAM role that allows the connector to write to the destination topic. 
+We need to declare an IAM role that allows the connector to write to the destination topic. 
 
-For the MSK cluster, the brokers are deployed in private subnet but with security group authorizing access from any hosts.
+For the MSK cluster, the brokers are deployed in private subnet but with security group authorizing access from any hosts. 
 
 ### Apache Camel Kinesis data streams source connector
 

@@ -1,0 +1,1 @@
+aws kafka create-configuration --name "ClusterConfiguration1" --description "Config for topic creation; topic deletion; 8hrs retention" --kafka-versions "2.8.1"  --server-properties fileb://kafka-config.properties
