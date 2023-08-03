@@ -44,18 +44,43 @@ This `infrastucture` folder includes cdk stack and constructs to define the diff
 
 1. Use CDK to deploy the solution stack and all needed constructs:
 
-```sh
-export APP_NAME=acr
-cdk deploy
-# it will take some minutes to create
+    ```sh
+    export APP_NAME=acr
+    cdk deploy
+    # it will take some minutes to create
 
-```
+    ```
 
 1. Verify cluster state
 
-```sh
-aws kafka list-clusters
-```
+    ```sh
+    aws kafka list-clusters
+    ```
+
+1. Ssh to the Bastion host with the key_pair pem. First get the public address of the EC2 instance:
+
+    ```sh
+    ssh -i ~/Code/tmp/my-ec2-key-pair.pem ec2-user@PUBLIC_IP_ADDRESS
+    ```
+1. Get the bootstrap URL for IAM authentication from the MSK console
+
+    ![](./docs/msk-bootstrap.png)
+
+    Or use the cluster arn and the aws cli
+
+    ```sh
+    aws kafka describe-cluster --cluster-arn CLUSTER_ARN
+    ```
+
+1. Once logged go to the kafka folder and create a topic with the following commands:
+
+    ```sh
+    export BS="b-2.......kafka.us-west-2.amazonaws.com:9098,b-1.......kafka.us-west-2.amazonaws.com:9098"
+    # in /home/ec2-user/kafka_2.12-3.4.1/bin
+    ./kafka-topics.sh --bootstrap-server $BS --command-config client.properties --create --topic carrides --partitions 1  --replication-factor 2
+    # Verify topics
+    ./kafka-topics.sh --bootstrap-server $BS --command-config client.properties --list
+    ```
 
 
 ## Code explanation
@@ -95,42 +120,107 @@ For the MSK cluster, the brokers are deployed in private subnet but with securit
 
 ### Apache Camel Kinesis data streams source connector
 
-The Camel version 3.18.2 includes pre-packaged connector in [this documentation](https://camel.apache.org/camel-kafka-connector/next/reference/index.html) that we can download to a working folder.  Untar and then zip it to upload to S3
+The full MSK Connect getting started [documentation is here](https://docs.aws.amazon.com/msk/latest/developerguide/mkc-tutorial-setup.html). The following instructions are extracted from the documentation and CloudFormation template.
 
-```sh
-aws s3 cp ~/Code/tmp/camel-aws-kinesis-source-kafka-connector.zip s3://msk-lab-${ACCOUNT_ID}-plugins-bucket/
-```
+* From the AWS Console, update the MSK cluster to add a `Unauthenticated` authentication listener and no encryption with plaintext. It may simplify connector connection for demonstration point of view.
 
-* Ensure MSK cluster is running. Then create a custom MSK Connect configuration using the plugin zip from S3 bucket:
+    ![](./docs/msk-authentications.png)
 
-![](./docs/msk-c-ui-1.png)
+The Camel version 3.18.2 includes pre-packaged connector in [this documentation](https://camel.apache.org/camel-kafka-connector/next/reference/index.html) that we can download to a working folder.  
 
-* Add the connector configuration from the [MSKConnect/CamelAwskinesissourceSourceConnector](https://github.com/jbcodeforce/MSK-labs/tree/main/infrastructure/MSKConnect/CamelAwskinesissourceSourceConnector.properties)
-* Use auto scaling when we do not know the workload pattern, for demo use provisioned with 1 worker.
+* Create a S3 bucket to persist the code of the connector.
+* Untar and then zip it, so we can upload to a S3 bucket:
+
+    ```sh
+    aws s3 cp ~/Code/tmp/camel-aws-kinesis-source-kafka-connector.zip s3://msk-lab-${ACCOUNT_ID}-plugins-bucket/
+    ```
+
+Keep the object arn: s3://msk-lab-.....-plugin-bucket/camel-aws-kinesis-source-kafka-connector.zip
+
 * Create a custom IAM role to read from Kinesis Data Streams with trusted entity being KafkaConnect
 
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "sts:AssumeRole"
-            ],
-            "Effect": "Allow",
-            "Principal": {
-                "Service": [
-                    "kafkaconnect.amazonaws.com"
-                ]
+    ```json
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Action": [
+                    "sts:AssumeRole"
+                ],
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": [
+                        "kafkaconnect.amazonaws.com"
+                    ]
+                }
             }
-        }
-    ]
-}
-```
+        ]
+    }
+    ```
 
-TBC..
+    Add an inline policy: 
+
+    ```json
+    {
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "VisualEditor0",
+			"Effect": "Allow",
+			"Action": [
+				"kafka-cluster:*",
+				"kafka:*"
+			],
+			"Resource": "*"
+		}
+	]
+    }
+    ```
+
+* Ensure MSK cluster is running. Then create a custom MSK Connect plugin configuration using the zip from S3 bucket:
+
+    ![](./docs/msk-c-ui-1.png)
+
+* Create a connector, and select the cluster with the none authentication mechanism 
+
+    ![](./docs/connector-1.png)
+
+* Add the connector configuration from the [MSKConnect/CamelAwskinesissourceSourceConnector](https://github.com/jbcodeforce/MSK-labs/tree/main/infrastructure/MSKConnect/CamelAwskinesissourceSourceConnector.properties)
+
+    ![](./docs/connector-2.png)
+
+* Use auto scaling when we do not know the workload pattern:
+
+    ![](./docs/connector-3.png)
+
+    and
+
+    ![](./docs/connector-4.png)
+
+* Select the role created above to access KDS and MSK:
+
+    ![](./docs/connector-5.png)
+
+* Do not use encryption in transit, as the URL of the MSK will be plaintext.
+
+    ![](./docs/connector-6.png)
+
+* Get the CloudWatch Log groups ARN to persist logs, and use it in the log configuration of the connector
+
+    ![](./docs/connector-7.png)
+
+
 
 MSK [Kafka connect documentation](https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html).
+
+## End to end testing
+
+1. Validate consumer using Kafka tools in the EC2 Bastion host:
+
+    ```sh
+    ./kafka-console-consumer.sh --bootstrap-server $BS --consumer.config client.properties --topic carrides --from-beginning
+    ```
+
 
 ## More information
 

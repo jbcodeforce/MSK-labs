@@ -39,7 +39,7 @@ class SolutionStack(BaseStack):
             msk.security_group, 
             bastion_host.security_group
         )
-        mskClient= MSKClients(self, f"{base_name}-clients", msk_cluster=msk.kafka_cluster, config=self.config)
+        #mskClient= MSKClients(self, f"{base_name}-clients", msk_cluster=msk.kafka_cluster, config=self.config)
 
 '''
 The source is a Kinesis Data Stream, so this is the declaration with a lambda

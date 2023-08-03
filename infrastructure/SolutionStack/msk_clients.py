@@ -7,7 +7,7 @@ from aws_cdk import (
 )
 
 from constructs import Construct
-
+from helpers.helpers import get_group_name, get_topic_name
 class MSKClients(Construct):
     def __init__(
         self,
@@ -35,5 +35,34 @@ class MSKClients(Construct):
             batch_size=100,  # default
             starting_position=lbda.StartingPosition.TRIM_HORIZON
         ))
+
+        access_kafka_policy = iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            actions=[
+                "kafka-cluster:Connect",
+            ],
+            resources=[msk_cluster.cluster_arn],
+        )
+        admin_kafka_topics = iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            actions=[
+                "kafka-cluster:WriteData",
+                "kafka-cluster:DescribeTopic",
+            ],
+            resources=[
+                get_topic_name(kafka_cluster_arn=msk_cluster.cluster_arn, topic_name=config.get("msk_topic_name"))
+            ],
+        )
+
+        access_to_user_groups = iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            actions=["kafka-cluster:AlterGroup", "kafka-cluster:DescribeGroup"],
+            resources=[get_group_name(kafka_cluster_arn=msk_cluster.cluster_arn, group_name="*")],
+        )
+
+        consumer_lambda.add_to_role_policy(access_kafka_policy)
+        consumer_lambda.add_to_role_policy(admin_kafka_topics)
+        consumer_lambda.add_to_role_policy(access_to_user_groups)
+
 
         
